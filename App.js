@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View,FlatList } from 'react-native';
 
 import { getNews } from './src/news';
-// import Article from './src/components/Article';
+import Article from './src/components/Article';
 
 export default class App extends React.Component {
 
@@ -10,6 +10,7 @@ export default class App extends React.Component {
     super(props)
     this.state = { articles: [], refreshing: true};
     this.fetchNews = this.fetchNews.bind(this);
+    this.handleRefresh = this.handleRefresh.bind(this);
   }
 
   componentDidMount(){
@@ -22,12 +23,25 @@ export default class App extends React.Component {
         .catch(() => this.setState({ refreshing: false }));
   }
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>chota</Text>
-      </View>
+  handleRefresh() {
+    this.setState(
+      {
+        refreshing: true
+    },
+      () => this.fetchNews()
     );
+  }
+
+  render() {
+     return (
+      <FlatList
+        data={this.state.articles}
+        renderItem={({ item }) => <Article article={item} />}
+        keyExtractor={item => item.url}
+        refreshing={this.state.refreshing}
+        onRefresh={this.handleRefresh.bind(this)}
+      />
+  );
   }
 }
 
